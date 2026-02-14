@@ -1,0 +1,570 @@
+
+/* Full screen background like Android calculator */
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: #0d0f13;
+  color: white;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+/* Calculator stays at bottom */
+.calculator-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+/* Main calculator panel */
+.calculator {
+  width: min(420px, 100%);
+  padding: 18px;
+  border-radius: 28px;
+  box-sizing: border-box;
+
+  background: rgba(14, 16, 20, 0.88);
+
+  /* Border around calculator */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  /* Outer soft shadow */
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.7);
+
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* ===== DISPLAY ===== */
+.display {
+  height: clamp(140px, 25vh, 190px);
+  padding: 22px 12px;
+  margin-bottom: 22px;
+  overflow-x: auto;
+
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 10px;
+  position: relative;
+}
+
+/* previous expression line */
+.prev-display {
+  font-size: clamp(1.1rem, 3vw, 1.4rem);
+  color: rgba(255, 255, 255, 0.55);
+  text-align: right;
+
+  white-space: nowrap;
+  overflow-x: auto;
+  flex: 1;
+}
+
+/* main input/result line */
+.main-display {
+  font-size: clamp(2.2rem, 5vw, 3rem);
+  font-weight: 500;
+  color: #ffffff;
+  text-align: right;
+
+  white-space: nowrap;
+  overflow-x: auto;
+  letter-spacing: 1px;
+}
+
+/* Scrollbar styling */
+.display::-webkit-scrollbar,
+.prev-display::-webkit-scrollbar,
+.main-display::-webkit-scrollbar {
+  height: 4px;
+}
+
+.display::-webkit-scrollbar-thumb,
+.prev-display::-webkit-scrollbar-thumb,
+.main-display::-webkit-scrollbar-thumb {
+  background: #2e2e2e;
+  border-radius: 10px;
+}
+
+/* =========================
+   HISTORY BUTTON (on display)
+   ========================= */
+.history-btn {
+  border: none;
+  cursor: pointer;
+
+  height: 42px;
+  width: 42px;
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+
+  font-size: 1.1rem;
+
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+
+.history-btn:active {
+  transform: scale(0.95);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .history-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(-2px);
+  }
+}
+
+/* ===== BUTTON GRID ===== */
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(12px, 2.5vw, 18px);
+}
+
+/* Button base style */
+.btn {
+  aspect-ratio: 1 / 1; /* keeps circular */
+  width: 100%;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+
+  font-size: clamp(1.4rem, 4.5vw, 2rem);
+  font-weight: 400;
+  color: #e9eef6;
+
+  background: #2b2e33;
+
+  /* Depth effect */
+  box-shadow: inset 0px -4px 8px rgba(0, 0, 0, 0.55),
+              inset 0px 4px 8px rgba(255, 255, 255, 0.05),
+              0px 8px 20px rgba(0, 0, 0, 0.35);
+
+  transition: transform 0.12s ease, background 0.2s ease,
+              box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+/* Active click animation */
+.btn:active {
+  transform: scale(0.94);
+  filter: brightness(1.08);
+}
+
+/* Operator buttons */
+.btn.operator {
+  background: #3a4451;
+  color: #dbe7ff;
+}
+
+/* Control buttons (AC, delete) */
+.btn.control {
+  background: #1d2026;
+  color: #d7e2f8;
+}
+
+/* AC special blue */
+.btn.control.ac {
+  background: #284a7a;
+  color: #d9e8ff;
+  font-weight: 700;
+}
+
+/* Delete icon size */
+.btn.control.del {
+  font-size: clamp(1.2rem, 4vw, 1.7rem);
+}
+
+/* Equals */
+.btn.equals {
+  background: #d7b8f7;
+  color: #2a1c34;
+  font-weight: 800;
+}
+
+/* ===== HOVER EFFECTS (Desktop only) ===== */
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover {
+    transform: translateY(-3px);
+    filter: brightness(1.15);
+
+    /* ✅ subtle glow */
+    box-shadow:
+      inset 0px -4px 8px rgba(0, 0, 0, 0.5),
+      inset 0px 4px 8px rgba(255, 255, 255, 0.07),
+      0px 12px 28px rgba(0, 0, 0, 0.55),
+      0px 0px 12px rgba(130, 170, 255, 0.12);
+  }
+
+  .btn.operator:hover {
+    background: #465b72;
+    box-shadow:
+      0px 12px 30px rgba(0, 0, 0, 0.55),
+      0px 0px 14px rgba(140, 190, 255, 0.18);
+  }
+
+  .btn.control.ac:hover {
+    background: #3262a8;
+    box-shadow:
+      0px 12px 30px rgba(0, 0, 0, 0.55),
+      0px 0px 16px rgba(90, 160, 255, 0.25);
+  }
+
+  .btn.equals:hover {
+    filter: brightness(1.1);
+    box-shadow:
+      0px 12px 32px rgba(0, 0, 0, 0.55),
+      0px 0px 18px rgba(215, 184, 247, 0.35);
+  }
+}
+
+
+/* =========================
+   HISTORY MODAL / OVERLAY
+   ========================= */
+
+.history-overlay {
+  position: fixed;
+  inset: 0;
+
+  /* ✅ glass blur overlay */
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+
+  padding: 16px;
+  z-index: 999;
+}
+
+.history-modal {
+  width: min(420px, 100%);
+  max-height: 70vh;
+
+  border-radius: 22px;
+  padding: 16px;
+
+  /* ✅ glassmorphism card */
+  background: rgba(20, 22, 28, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  box-shadow:
+    0 18px 60px rgba(0, 0, 0, 0.85),
+    inset 0px 1px 0px rgba(255, 255, 255, 0.05);
+
+  display: flex;
+  flex-direction: column;
+
+  animation: slideUp 0.2s ease;
+}
+
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0.6;
+  }
+  to {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
+/* Modal header */
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.history-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.history-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.clear-history,
+.close-history {
+  border: none;
+  cursor: pointer;
+
+  padding: 8px 14px;
+  border-radius: 14px;
+
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.85);
+
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+
+.close-history {
+  padding: 8px 12px;
+}
+
+.clear-history:active,
+.close-history:active {
+  transform: scale(0.95);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .clear-history:hover,
+  .close-history:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(-2px);
+  }
+}
+
+/* Scrollable history list */
+.history-list {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.history-list::-webkit-scrollbar {
+  width: 6px;
+}
+.history-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+}
+
+/* History item */
+.history-item {
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  border-radius: 14px;
+
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .history-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(-2px);
+
+    /* ✅ glow */
+    box-shadow:
+      0px 10px 25px rgba(0, 0, 0, 0.55),
+      0px 0px 14px rgba(215, 184, 247, 0.25);
+  }
+}
+
+
+.history-exp,
+.history-res {
+  cursor: pointer;
+  white-space: nowrap;
+  overflow-x: auto;
+}
+
+.history-exp {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.95rem;
+}
+
+.history-res {
+  margin-top: 6px;
+  color: #d7b8f7;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+/* No history message */
+.no-history {
+  color: rgba(255, 255, 255, 0.55);
+  text-align: center;
+  margin-top: 40px;
+  font-size: 0.95rem;
+}
+
+/* ===== MOBILE SMALL SCREEN SUPPORT ===== */
+@media (max-width: 360px) {
+  .calculator {
+    padding: 12px;
+    border-radius: 24px;
+  }
+
+  .display {
+    padding: 16px 8px;
+    margin-bottom: 16px;
+    border-radius: 16px;
+  }
+}
+
+/* =========================
+   ICON INTERACTIONS
+   ========================= */
+
+
+/* ✅ icon hover color changes */
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover svg {
+    color: #ffffff;
+    transform: scale(1.08);
+  }
+
+  .btn.operator:hover svg {
+    color: #dbe7ff;
+  }
+
+  .btn.control:hover svg {
+    color: #f1f6ff;
+  }
+
+  .btn.equals:hover svg {
+    color: #2a1c34;
+  }
+
+  .history-btn:hover svg {
+    color: #d7b8f7;
+    transform: rotate(-8deg) scale(1.1);
+  }
+
+  .clear-history:hover svg {
+    color: #ff6b6b;
+    transform: scale(1.1);
+  }
+
+  .close-history:hover svg {
+    color: #ffffff;
+    transform: scale(1.1);
+  }
+}
+
+/* =========================
+   HISTORY OPEN/CLOSE ANIMATIONS
+   ========================= */
+
+.history-overlay {
+  position: fixed;
+  inset: 0;
+
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+
+  padding: 16px;
+  z-index: 999;
+
+  animation: overlayFadeIn 0.22s ease forwards;
+}
+
+.history-modal {
+  width: min(420px, 100%);
+  max-height: 70vh;
+
+  border-radius: 22px;
+  padding: 16px;
+
+  background: rgba(20, 22, 28, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  box-shadow:
+    0 18px 60px rgba(0, 0, 0, 0.85),
+    inset 0px 1px 0px rgba(255, 255, 255, 0.05);
+
+  display: flex;
+  flex-direction: column;
+
+  animation: modalSlideUp 0.45s ease forwards;
+}
+
+/* ✅ closing state */
+.history-overlay.closing {
+  animation: overlayFadeOut 0.45s ease forwards;
+}
+
+.history-modal.closing {
+  animation: modalSlideDown 0.45s ease forwards;
+}
+
+/* =========================
+   KEYFRAMES
+   ========================= */
+
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes overlayFadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes modalSlideUp {
+  from {
+    transform: translateY(35px);
+    opacity: 0.6;
+  }
+  to {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
+@keyframes modalSlideDown {
+  from {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(35px);
+    opacity: 0;
+  }
+}
+
+/* Swipe drag handle */
+.drag-handle {
+  width: 54px;
+  height: 6px;
+  border-radius: 999px;
+  margin: 6px auto 14px auto;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* When dragging, remove transition for real-time movement */
+.history-modal.dragging {
+  transition: none !important;
+  cursor: grabbing;
+}
+
+/* Smooth snap back transition */
+.history-modal {
+  transition: transform 0.2s ease;
+}
